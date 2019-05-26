@@ -17,41 +17,53 @@
 import java.util.*;
 import java.time.LocalDateTime;
 
-public class App {
-    public static List<TaxiDriver> taxiDriverList = new ArrayList<>();
-    public static boolean check;
-    public static boolean close;
-    public static boolean nextStep;
-    public static boolean logout;
-    public static TaxiDriver taxiDriver;
+public class App implements Iterable<TaxiDriver>{
 
-    TimeCalculator timeCalculator = new TimeCalculator();
+    public boolean check;
+    public boolean close;
+    public boolean nextStep;
+    public boolean logout;
+    public TaxiDriver taxiDriver;
 
-    public static String scanWord() {
+    private List<TaxiDriver> taxiDriverList = new ArrayList<>();
+    private TaxiDriverCounter counter = new NormalTaxiDriverCounter();
+
+    @Override
+    public Iterator<TaxiDriver> iterator() {
+        this.counter.setTaxiDriverList(taxiDriverList);
+        return this.counter;
+    }
+
+    public void setCounter(TaxiDriverCounter counter) {
+        this.counter = counter;
+    }
+
+    public String scanWord() {
         Scanner myScan = new Scanner(System.in);
         return myScan.nextLine().trim();
     }
 
-    public static String date() {
+    public String date() {
         String dateTime = LocalDateTime.now().toString();
         String date = dateTime.substring(0, 10);
         return date;
     }
 
-    public static String time() {
+    public String time() {
         String dateTime = LocalDateTime.now().toString();
         String time = dateTime.substring(11, 19);
         return time;
     }
 
-    public static TaxiDriver loginCheck(String user,String pass) {
+    public TaxiDriver loginCheck(String user,String pass) {
+        this.setCounter(new NormalTaxiDriverCounter());
         for(TaxiDriver td : taxiDriverList){
             if(user.equals(td.getUser()) && pass.equals(td.getPassword())) return td;
         }
         return null;
     }
 
-    public static boolean login() {
+    public boolean login() {
         if(taxiDriverList.size() == 0) {
             System.out.println("Empty taxi driver account!!\nPlease sign-up.");
             return false;
@@ -83,7 +95,8 @@ public class App {
         return false;
     }
 
-    public static void saveInformation(TaxiDriver td) {
+    public void saveInformation(TaxiDriver td) {
+        this.setCounter(new NormalTaxiDriverCounter());
         for(TaxiDriver t: taxiDriverList){
             if(t.toString().equalsIgnoreCase(td.toString())){
                 System.out.println("You are already have an account!!");
@@ -94,7 +107,8 @@ public class App {
         taxiDriverList.add(td);
     }
 
-    public static void saveAccount(String username, TaxiDriver td) {
+    public void saveAccount(String username, TaxiDriver td) {
+        this.setCounter(new ReverseTaxiDriverCounter());
         for(TaxiDriver t : taxiDriverList){
             if(username.equals(t.getUser())){
                 System.out.println("This username already exist!!");
@@ -108,7 +122,7 @@ public class App {
         td.setUserPassword(username, password);
     }
 
-    public static void introAccount(TaxiDriver td) {
+    public void introAccount(TaxiDriver td) {
         String username;
         System.out.println("\n==== CREATE DRIVER'S ACCOUNT ====");
         do {
@@ -118,7 +132,7 @@ public class App {
         }while(!check);
     }
 
-    public static TaxiDriver introRegist() {
+    public TaxiDriver introRegist() {
         System.out.println("\n==== THIS IS QUICK REGISTERATION!!! ====");
         System.out.print("Please enter your first name: ");
         String name = scanWord();
@@ -139,7 +153,7 @@ public class App {
         return td;
     }
 
-    public static void registration() {
+    public void registration() {
         String choose1;
         TaxiDriver td;
         do {
@@ -160,7 +174,7 @@ public class App {
         if(choose1.equalsIgnoreCase("B")) return;
     }
 
-    public static String taxiIntro() {
+    public String taxiIntro() {
         System.out.print("[S]tart-work [P]rint all customer detail [L]ogout or [Q]uit: ");
         String choose3 = scanWord();
         if(choose3.equalsIgnoreCase("Q")) {
@@ -173,7 +187,7 @@ public class App {
         return choose3;
     }
 
-    public static Customer createCustomer(String first, String mid, String last, String id, String na){
+    public Customer createCustomer(String first, String mid, String last, String id, String na){
         Customer customer;
         if(mid == null) customer = new ThaiCustomer.Builder(first, last, id)
                                         .age("-")
@@ -190,7 +204,7 @@ public class App {
     }
 
 
-    public static void taxiManagement() {
+    public void taxiManagement() {
         String choose5;
         String stop;
         String firstName, middleName = null, lastName, id, na = "US";
@@ -259,7 +273,7 @@ public class App {
         }while(!close);
     }
 
-    public static void mainIntro() {
+    public void mainIntro() {
         String choose0 = "";
         do {
             System.out.print("\nPlease [L]ogin [S]ign-up or [Q]uit: ");
@@ -279,7 +293,7 @@ public class App {
         }while(!choose0.equalsIgnoreCase("Q") || !close);
     }
 
-    public static void main(String[]args) {
+    public void run() {
         check = true;
         close = false;
         nextStep = false;
@@ -290,7 +304,7 @@ public class App {
             if(close) break;
             if(nextStep) taxiManagement();
             if(logout) continue;
-        }while(!close);
+        }while(true);
         System.out.println("Thank you!!");
     }
 }
