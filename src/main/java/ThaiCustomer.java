@@ -18,7 +18,6 @@ public class ThaiCustomer implements Customer {
 
     TimeCalculator timeCal = new TimeCalculator();
 
-
     private ThaiCustomer(Builder builder) {
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;

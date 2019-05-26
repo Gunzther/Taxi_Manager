@@ -13,5 +13,4 @@ public class ReverseTaxiDriverCounter extends TaxiDriverCounter{
         return taxiDriverList.get(taxiDriverList.size() - index);
     }
 
-
 }
